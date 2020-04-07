@@ -7,13 +7,14 @@ public class ClipboardContentCommand implements Command {
 	private Engine engine;
 	
 	public ClipboardContentCommand(Engine engine) {
+		
 		this.engine = engine;
 	}
 
 	@Override
 	public void execute() {
 		
-		System.out.print("Clipboard Content : " + this.engine.getClipboardContent());
+		System.out.println("Clipboard Content : \"" + this.engine.getClipboardContent() + "\"");
 	}
 
 }

@@ -15,6 +15,7 @@ public class CursorPositionCommand implements Command {
 	@Override
 	public void execute() {
 		
-		System.out.print("Cursor position : " + this.engine.getSelection().getCursorPosition());
+		System.out.println("Cursor position : " + this.engine.getSelection().getCursorPosition());
 	}
+	
 }

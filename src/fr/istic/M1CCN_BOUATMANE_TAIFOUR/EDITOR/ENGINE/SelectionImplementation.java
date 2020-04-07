@@ -6,20 +6,18 @@ public class SelectionImplementation implements Selection {
 	private int cursorPosition;
 	private int markerPosition;
 	
-	
 	public SelectionImplementation(Engine engine) {
 		
 		this.engine = engine;
 		this.cursorPosition = 0;
-		this.markerPosition = 0;
+		this.markerPosition = -1;
 	}
 
 	@Override
-	public void moveCursor(int move) {
-		
-		if (! (getCursorPosition() + move >= 0 
+	public void moveCursor(int move) throws StringIndexOutOfBoundsException {
+		if (!(getCursorPosition() + move >= 0 
 				&& getCursorPosition() + move <= this.engine.getBufferLength())) {
-			throw new IllegalArgumentException();
+			throw new StringIndexOutOfBoundsException();
 		}
 		
 		this.cursorPosition += move;
@@ -45,31 +43,19 @@ public class SelectionImplementation implements Selection {
 
 	@Override
 	public void moveToStart() {
-
 		this.cursorPosition = 0;		
 	}
 
 	@Override
 	public void moveToEnd() {
-
+		
 		this.cursorPosition = this.engine.getBufferLength();
 	}
 
 	@Override
 	public void resetMarkerPosition() {
-		this.markerPosition = 0;
+		
+		this.markerPosition = -1;
 	}
-
-//	@Override
-//	public boolean cursorIsAtEnd() {
-//
-//		return this.cursorPosition;
-//	}
-//
-//	@Override
-//	public boolean cursorIsAtStart() {
-//		// TODO Auto-generated method stub
-//		return false;		
-//	}
 
 }

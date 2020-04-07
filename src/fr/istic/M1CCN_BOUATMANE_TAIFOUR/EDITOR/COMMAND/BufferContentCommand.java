@@ -7,13 +7,14 @@ public class BufferContentCommand implements Command {
 	private Engine engine;
 	
 	public BufferContentCommand(Engine engine) {
+		
 		this.engine = engine;
 	}
 
 	@Override
 	public void execute() {
 		
-		System.out.println("Buffer content : " + this.engine.getBufferContent());
+		System.out.println("Buffer content : \"" + this.engine.getBufferContent() + "\"");
 	}
 
 }

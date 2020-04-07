@@ -14,13 +14,15 @@ public class InsertCommand implements Command {
 		this.hci = hci;
 	}
 	
+	/*
+	 * Convert the inserted characters string to an array of characters,
+	 * then loop though the array to insert one by one to the engine 
+	 */
 	@Override
 	public void execute() {
-		
 		char[] inputChars = this.hci.getInsertedCharacters().toCharArray();
 		
 		for(char c : inputChars) {
-			
 			this.engine.insert(c);
 		}
 	}

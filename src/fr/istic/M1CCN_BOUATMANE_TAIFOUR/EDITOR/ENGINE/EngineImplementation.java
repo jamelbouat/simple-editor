@@ -3,11 +3,10 @@ package fr.istic.M1CCN_BOUATMANE_TAIFOUR.EDITOR.ENGINE;
 public class EngineImplementation implements Engine {
 	
 	private StringBuffer buffer;
-	private String clipBoard = "";
 	private Selection selection;
-	
+	private String clipBoard;
+
 	public EngineImplementation() {
-		
 		this.buffer = new StringBuffer();
 		this.selection = new SelectionImplementation(this);
 		this.clipBoard = new String("");
@@ -21,20 +20,36 @@ public class EngineImplementation implements Engine {
 
 	@Override
 	public void cut() {
-
 		int cursor = getSelection().getCursorPosition();
 		int marker = getSelection().getMarkerPosition();
 		
-		this.clipBoard = (cursor != marker && cursor > marker) ? 
+		/*
+		 * No selection : method cut do nothing if the marker position is not set or 
+		 * the cursor and marker have the same positions
+		 */
+		if (marker == -1 || cursor == marker) {
+			return;
+		}
+		
+		/*
+		 * cursor > marker : forward selection (left to right move)
+		 * cursor < marker : backward selection (right to left move)
+		 */
+		this.clipBoard = (cursor > marker) ? 
 				this.getBufferContent().substring(marker, cursor) :
 					this.getBufferContent().substring(cursor, marker);
 				
-		this.buffer = (cursor != marker && cursor > marker) ? 
+		this.buffer = (cursor > marker) ? 
 				this.buffer.delete(marker, cursor) :
 					this.buffer.delete(cursor, marker);
-
+				
+		/*
+		* Forward selection : Make the cursor moves from right to left by
+		* the difference between by marker and cursor positions,
+		* Backward selection (marker > cursor) : the cursor keeps it current position
+		*/ 
 		if (cursor > marker) {
-			getSelection().moveCursor(marker - cursor);
+			this.getSelection().moveCursor(marker - cursor);
 		}
 		
 		this.getSelection().resetMarkerPosition();
@@ -42,11 +57,18 @@ public class EngineImplementation implements Engine {
 
 	@Override
 	public void copy() {
-
 		int cursor = getSelection().getCursorPosition();
 		int marker = getSelection().getMarkerPosition();
 		
-		this.clipBoard = (cursor != marker && cursor > marker) ? 
+		/*
+		 * No selection : method copy do nothing if the marker position is not set or 
+		 * the cursor and marker have the same positions
+		 */
+		if (marker == -1 || cursor == marker) {
+			return;
+		}
+		
+		this.clipBoard = (cursor > marker) ? 
 				this.getBufferContent().substring(marker, cursor) :
 					this.getBufferContent().substring(cursor, marker);
 				
@@ -55,27 +77,31 @@ public class EngineImplementation implements Engine {
 
 	@Override
 	public void paste() {
-
 		for(char c : this.getClipboardContent().toCharArray()) {
 			this.insert(c);
 		}
-		
-		this.getSelection().resetMarkerPosition();
 	}
 
 	@Override
 	public void insert(char c) {
-		
-		this.buffer.insert(getSelection().getCursorPosition(), c);
+		this.buffer.insert(this.getSelection().getCursorPosition(), c);
 		this.getSelection().moveCursor(1);
-		this.getSelection().resetMarkerPosition();
 	}
 
+	/*
+	 * Catch an exception thrown by the moveCursor method if 
+	 * trying deleting at the 0 cursor position 
+	 * A warning is displayed if an exception is thrown
+	 */
 	@Override
 	public void delete() {
-		this.getSelection().moveCursor(-1);
-		this.buffer.deleteCharAt(getSelection().getCursorPosition());
-		this.getSelection().resetMarkerPosition();
+		try {
+			this.getSelection().moveCursor(-1);
+			this.buffer.deleteCharAt(getSelection().getCursorPosition());
+			
+		} catch (StringIndexOutOfBoundsException e) {
+			System.out.println("Warning : There is no character to delete\n");
+		}
 	}
 
 	@Override
@@ -86,7 +112,6 @@ public class EngineImplementation implements Engine {
 
 	@Override
 	public String getBufferContent() {
-
 		String bufferContent = "";
 		for (int i = 0; i < this.getBufferLength(); i++) {
 			bufferContent += this.buffer.charAt(i);

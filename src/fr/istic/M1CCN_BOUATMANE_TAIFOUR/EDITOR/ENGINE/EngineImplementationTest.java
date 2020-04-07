@@ -1,5 +1,6 @@
 package fr.istic.M1CCN_BOUATMANE_TAIFOUR.EDITOR.ENGINE;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -17,13 +18,13 @@ class EngineImplementationTest {
 	}
 
 	@BeforeEach
-	void setUp() throws Exception {
+	public void setUp() throws Exception {
 		engine = new EngineImplementation();
 	}
 	
 	@Test
 	@DisplayName("Test case : insert method at the end of the buffer")
-	void testInsertEndBuffer() {
+	public void testInsertEndBuffer() {
 		
 		assertEquals("", engine.getBufferContent());
 		assertEquals("", engine.getClipboardContent());
@@ -41,7 +42,7 @@ class EngineImplementationTest {
 	
 	@Test
 	@DisplayName("Test case : insert method inside the buffer")
-	void testInsertInsideBuffer() {
+	public void testInsertInsideBuffer() {
 
 		this.insertStringOfChars("ad");
 		engine.getSelection().moveCursor(-1);
@@ -58,7 +59,7 @@ class EngineImplementationTest {
 	
 	@Test
 	@DisplayName("Test case : insert method at start of the buffer")
-	void testInsertStartBuffer() {
+	public void testInsertStartBuffer() {
 
 		this.insertStringOfChars("bc");
 		engine.getSelection().moveCursor(-2);
@@ -71,25 +72,16 @@ class EngineImplementationTest {
 	
 	@Test
 	@DisplayName("Test case : getBufferContent method")
-	void testGetBufferContent() {
+	public void testGetBufferContent() {
 		
 		assertEquals("", engine.getBufferContent());
 		this.insertStringOfChars("abcde");
 		assertEquals("abcde", engine.getBufferContent());
 	}
-		
-//	@Test
-//	@DisplayName("Test case : cursor is at start of the buffer")
-//	void testCursorIsAtStart() {
-//		
-//		assertTrue(engine.getSelection().cursorIsAtStart());
-//	}
-	
-//	s
 
 	@Test
 	@DisplayName("Test case : getClipboardContent method")
-	void testGetClipboardContent() {
+	public void testGetClipboardContent() {
 		
 		assertEquals("", engine.getClipboardContent());
 		this.insertStringOfChars("abcde");
@@ -105,33 +97,29 @@ class EngineImplementationTest {
 	
 	@Test
 	@DisplayName("Test case : forbid the cursor to go in a backward move at the start of the buffer")
-	void testNegativeMoveInStartBufferPosition() {
+	public void testNegativeMoveInStartBufferPosition() {
 		
 		assertEquals(0, engine.getSelection().getCursorPosition());
-		assertThrows(IllegalArgumentException.class, () -> engine.getSelection().moveCursor(-1));
+		assertThrows(StringIndexOutOfBoundsException.class, () -> engine.getSelection().moveCursor(-1));
 		
 		this.insertStringOfChars("abcd");
 		engine.getSelection().moveToStart();
-		assertThrows(IllegalArgumentException.class, () -> engine.getSelection().moveCursor(-1));
+		assertThrows(StringIndexOutOfBoundsException.class, () -> engine.getSelection().moveCursor(-1));
 	}
 	
 	@Test
 	@DisplayName("Test case : forbid the cursor to go in a foward move at the end of the buffer")
-	void testPositiveMoveInEndBufferPosition() {
+	public void testPositiveMoveInEndBufferPosition() {
 		
-		assertThrows(IllegalArgumentException.class, () -> engine.getSelection().moveCursor(1));
+		assertThrows(StringIndexOutOfBoundsException.class, () -> engine.getSelection().moveCursor(1));
 		
 		this.insertStringOfChars("abcd");
-		assertThrows(IllegalArgumentException.class, () -> engine.getSelection().moveCursor(1));
+		assertThrows(StringIndexOutOfBoundsException.class, () -> engine.getSelection().moveCursor(1));
 	}
-	
-//	@Test
-//	@DisplayName("Test case : ")
-	
 	
 	@Test
 	@DisplayName("Test case : cut method forward selection")
-	void testCutForwardSelection() {
+	public void testCutForwardSelection() {
 		
 		this.insertStringOfChars("abcde");
 		engine.getSelection().moveToStart();
@@ -142,12 +130,12 @@ class EngineImplementationTest {
 		assertEquals("ab", engine.getBufferContent());
 		assertEquals("cde", engine.getClipboardContent());
 		assertEquals(2, engine.getSelection().getCursorPosition());
-		assertEquals(0, engine.getSelection().getMarkerPosition());
+		assertEquals(-1, engine.getSelection().getMarkerPosition());
 	}
 	
 	@Test
 	@DisplayName("Test case : cut method backward selection")
-	void testCutBackwardSelection() {
+	public void testCutBackwardSelection() {
 		
 		this.insertStringOfChars("abcde");
 		engine.getSelection().setMarkerPosition();
@@ -156,12 +144,30 @@ class EngineImplementationTest {
 		assertEquals("a", engine.getBufferContent());
 		assertEquals("bcde", engine.getClipboardContent());
 		assertEquals(1, engine.getSelection().getCursorPosition());
-		assertEquals(0, engine.getSelection().getMarkerPosition()); // critical
+		assertEquals(-1, engine.getSelection().getMarkerPosition());
 	}
-
+	
+	@Test
+	@DisplayName("Test case : cut method with a non set marker position or equivalent to the cursor position")
+	public void testCutWithoutSelection() {
+		
+		this.insertStringOfChars("abcde");
+		assertEquals(5, engine.getSelection().getCursorPosition());
+		assertEquals(-1, engine.getSelection().getMarkerPosition());
+		
+		engine.cut();
+		assertEquals("abcde", engine.getBufferContent());
+		assertEquals("", engine.getClipboardContent());
+		
+		engine.getSelection().setMarkerPosition();
+		assertEquals(5, engine.getSelection().getMarkerPosition());
+		assertEquals("abcde", engine.getBufferContent());
+		assertEquals("", engine.getClipboardContent());
+	}
+	
 	@Test
 	@DisplayName("Test case : copy method forward selection")
-	void testCopyForwardSelection() {
+	public void testCopyForwardSelection() {
 	
 		this.insertStringOfChars("abcde");
 		engine.getSelection().moveToStart();
@@ -172,12 +178,12 @@ class EngineImplementationTest {
 		assertEquals("abcde", engine.getBufferContent());
 		assertEquals("cde", engine.getClipboardContent());
 		assertEquals(5, engine.getSelection().getCursorPosition());
-		assertEquals(2, engine.getSelection().getMarkerPosition());
+		assertEquals(-1, engine.getSelection().getMarkerPosition());
 	}
 	
 	@Test
 	@DisplayName("Test case : copy method forward selection")
-	void testCopyBackwardSelection() {
+	public void testCopyBackwardSelection() {
 		
 		this.insertStringOfChars("abcde");
 		engine.getSelection().setMarkerPosition();
@@ -186,12 +192,28 @@ class EngineImplementationTest {
 		assertEquals("abcde", engine.getBufferContent());
 		assertEquals("bcde", engine.getClipboardContent());
 		assertEquals(1, engine.getSelection().getCursorPosition());
-		assertEquals(5, engine.getSelection().getMarkerPosition());
+		assertEquals(-1, engine.getSelection().getMarkerPosition());
 	}
 
 	@Test
+	@DisplayName("Test case : copy method with a non set marker position or equivalent to the cursor position")
+	public void testCopyWithoutSelection() {
+		
+		this.insertStringOfChars("abcde");
+		assertEquals(5, engine.getSelection().getCursorPosition());
+		assertEquals(-1, engine.getSelection().getMarkerPosition());
+		
+		engine.copy();
+		assertEquals("", engine.getClipboardContent());
+		
+		engine.getSelection().setMarkerPosition();
+		assertEquals(5, engine.getSelection().getMarkerPosition());
+		assertEquals("", engine.getClipboardContent());
+	}
+	
+	@Test
 	@DisplayName("Test case : paste method after a copy on a selection")
-	void testPasteAfterCopy() {
+	public void testPasteAfterCopy() {
 		
 		this.insertStringOfChars("abcde");
 		engine.getSelection().moveToStart();
@@ -203,12 +225,12 @@ class EngineImplementationTest {
 		assertEquals("abcdeabcde", engine.getBufferContent());
 		assertEquals("abcde", engine.getClipboardContent());
 		assertEquals(10, engine.getSelection().getCursorPosition());
-		assertEquals(0, engine.getSelection().getMarkerPosition());
+		assertEquals(-1, engine.getSelection().getMarkerPosition());
 	}
 	
 	@Test
 	@DisplayName("Test case : paste method after a cut method")
-	void testPasteAfterCut() {
+	public void testPasteAfterCut() {
 		
 		this.insertStringOfChars("abcdeabcde");
 		engine.getSelection().setMarkerPosition();
@@ -224,7 +246,7 @@ class EngineImplementationTest {
 	
 	@Test
 	@DisplayName("Test case : paste method inside the buffer")
-	void testPasteInsideBuffer() {
+	public void testPasteInsideBuffer() {
 		
 		this.insertStringOfChars("abcdefghik");
 		engine.getSelection().moveCursor(-5);
@@ -240,7 +262,7 @@ class EngineImplementationTest {
 	
 	@Test
 	@DisplayName("Test case : delete character at the end of the buffer")
-	void testDeleteEndBuffer() {
+	public void testDeleteEndBuffer() {
 		
 		this.insertStringOfChars("abcde");
 		assertEquals(5, engine.getSelection().getCursorPosition());
@@ -257,10 +279,9 @@ class EngineImplementationTest {
 	
 	@Test
 	@DisplayName("Test case : delete character inside the buffer")
-	void testDeleteInsideBuffer() {
+	public void testDeleteInsideBuffer() {
 		
 		this.insertStringOfChars("abcde");
-		assertEquals(5, engine.getSelection().getCursorPosition());		
 		engine.getSelection().moveCursor(-2);
 		assertEquals(3, engine.getSelection().getCursorPosition());		
 		engine.delete();
@@ -268,26 +289,15 @@ class EngineImplementationTest {
 		assertEquals(2, engine.getSelection().getCursorPosition());		
 	}
 	
-	@Test
-	@DisplayName("Test case : delete character at the start of the buffer")
-	void testDeleteStartBuffer() {
-		
-		assertThrows(IllegalArgumentException.class, () -> engine.delete());	
+	@Test()
+	@DisplayName("Test case : delete character at the start of the buffer, no exception is thrown")
+	public void testDeleteAtStartBuffer() {
 
-		this.insertStringOfChars("abcde");
-		engine.getSelection().moveToStart();		
-		assertThrows(IllegalArgumentException.class, () -> engine.delete());	
-	}
-		
-	@Test
-	@DisplayName("Test case : reset marker position")
-	void testResetMarkerPosition() {
+		assertDoesNotThrow(() -> this.engine.delete());
 		
 		this.insertStringOfChars("abcde");
-		engine.getSelection().setMarkerPosition();
 		engine.getSelection().moveToStart();
-		engine.getSelection().resetMarkerPosition();
-		assertThrows(IllegalArgumentException.class, () -> engine.delete());	
+		assertDoesNotThrow(() -> this.engine.delete());
 	}
 	
 }

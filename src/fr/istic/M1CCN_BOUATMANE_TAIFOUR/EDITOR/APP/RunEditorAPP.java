@@ -11,27 +11,33 @@ public class RunEditorAPP {
 	
 	public static void main (String[] args) {
 		
+		/*
+		 * Instantiate an engine and a hci
+		 */
 		engine = new EngineImplementation();
 		hci = new HCIImplementation();
 		
+		// Add or set the editor commands
 		setInvokerCommands();
+		// Display the command selectors to the user
 		displayCommandList();
+		// Start the editor loop
 		hci.startInvokerEditorLoop();		
 	}
 	
 	public static void displayCommandList() {
 
 		System.out.println("-------- Command List -------- \n"
-				+ "mv : make a cursor move.\n"
-				+ "i : insert a character at the current cursor position.\n"
+				+ "mv :   make a cursor move.\n"
+				+ "i :    insert a character at the current cursor position.\n"
 				+ "mark : set a marker at the current cursor position.\n"
-				+ "c : copy the current selection.\n"
-				+ "x : cut the current selection.\n"
-				+ "v : paste the clipboard content to the cursor current position.\n"
-				+ "d : delete a character at the current cursor position.\n"
-				+ "s : move the cursor to the start of the buffer.\n"
-				+ "e : move the cursor to the end of the buffer.\n"
-				+ "q : quit the editor.\n");
+				+ "c :    copy the current selection.\n"
+				+ "x :    cut the current selection.\n"
+				+ "v :    paste the clipboard content to the cursor current position.\n"
+				+ "d :    delete a character at the current cursor position.\n"
+				+ "s :    move the cursor to the start of the buffer.\n"
+				+ "e :    move the cursor to the end of the buffer.\n"
+				+ "q :    quit the editor.\n");
 	}
 
 	public static void setInvokerCommands() {
@@ -47,7 +53,8 @@ public class RunEditorAPP {
 		hci.setCommand("e", new MoveToEndBufferCommand(engine));
 		hci.setCommand("q", new ExitEditorCommand(hci));
 		hci.setCommand("buffer", new BufferContentCommand(engine));
-		hci.setCommand("curs", new CursorPositionCommand(engine));
+		hci.setCommand("clipboard", new ClipboardContentCommand(engine));
+		hci.setCommand("cursor", new CursorPositionCommand(engine));
 	}
 	
 }
